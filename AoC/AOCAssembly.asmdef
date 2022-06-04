@@ -1,0 +1,20 @@
+{
+    "name": "AOCAssembly",
+    "references": [
+        "GUID:a44f47cf3ada4435dbc516bad0bc86fe"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "BepInEx.dll",
+        "RoR2.dll",
+        "Assembly-CSharp.dll",
+        "ZetAspects.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
