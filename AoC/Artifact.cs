@@ -69,6 +69,12 @@ namespace AOCMod
         {
             if (RunArtifactManager.instance.IsArtifactEnabled(MyArtifactDef))
             {
+                if (lastSceneType == SceneType.Intermission)
+                {
+                    CharacterMaster.readOnlyInstancesList[chosenID].inventory.RemoveItem(ItemCatalog.FindItemIndex(aspectNames[aspectID]));
+                }
+
+                lastSceneType = obj.sceneDef.sceneType;
                 //Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { $"111 chosenID: {chosenID}, AspectID: {aspectID}, NAME: {GetZetAspectID(aspectID)}, MAX PlayerID: {PlayerCharacterMasterController.instances.Count - 1}" } });
                 chosenID = random.Next(PlayerCharacterMasterController.instances.Count);
                 aspectID = random.Next(aspectNames.Count);
@@ -80,13 +86,6 @@ namespace AOCMod
                 catch { Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { $"Could not add the item to the inventory of the player ID { chosenID }, perhaps CharacterMaster.readOnlyInstancesList has not been created or the ID is wrong" } }); }
 
                 Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { $"The artifact has chosen {PlayerCharacterMasterController.instances[chosenID].GetDisplayName()}" } });
-                
-                if (lastSceneType == SceneType.Intermission)
-                {
-                    CharacterMaster.readOnlyInstancesList[chosenID].inventory.RemoveItem(ItemCatalog.FindItemIndex(aspectNames[aspectID]));
-                }
-
-                lastSceneType = obj.sceneDef.sceneType;
                 //TPDespair.ZetAspects.Language.tokens.ContainsKey(ItemCatalog.GetItemDef(ItemCatalog.FindItemIndex(aspectNames[aspectID])).nameToken);
                 //CharacterMaster.readOnlyInstancesList[chosenID].inventory.GiveItemString(GetZetAspectID(0));
                 //     PlayerCharacterMasterController.instances[chosenID].master.GetBody().inventory.GiveItemString(GetZetAspectID(aspectID));

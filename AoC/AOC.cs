@@ -30,7 +30,7 @@ namespace AOCMod
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "CuteDoge";
         public const string PluginName = "ArtifactOfChosen";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "1.0.5";
 
         private static ArtifactDef AoC;
         //AOC = ArtifactOfChosen
