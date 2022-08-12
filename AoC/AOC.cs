@@ -8,6 +8,7 @@ using RoR2;
 using static AOCMod.AssetLoad;
 using static RoR2.Chat;
 using static RoR2.Console;
+using BepInEx.Configuration;
 
 namespace AOCMod
 {
@@ -18,19 +19,19 @@ namespace AOCMod
 
     public class AOC : BaseUnityPlugin
     {
-
+        public static ConfigEntry<int> NumOfAspectsPerStageConf { get; set; }
+        public static ConfigEntry<string> FirstArtifactGivenConf { get; set; }
         //We will be using 2 modules from R2API: ItemAPI to add our item and LanguageAPI to add our language tokens.
         //[R2APISubmoduleDependency(nameof(ItemAPI), nameof(LanguageAPI))]
 
         //BaseUnityPlugin itself inherits from MonoBehaviour, so you can use this as a reference for what you can declare and use in your plugin class: https://docs.unity3d.com/ScriptReference/MonoBehaviour.html
-
 
         //The Plugin GUID should be a unique ID for this plugin, which is human readable (as it is used in places like the config).
         //If we see this PluginGUID as it is on thunderstore, we will deprecate this mod. Change the PluginAuthor and the PluginName !
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "CuteDoge";
         public const string PluginName = "ArtifactOfChosen";
-        public const string PluginVersion = "1.0.5";
+        public const string PluginVersion = "1.0.7";
 
         private static ArtifactDef AoC;
         //AOC = ArtifactOfChosen
@@ -39,26 +40,21 @@ namespace AOCMod
 
         public void Awake()
         {
-            //Artifact art = new Artifact();
-            //PopulateAssets();
             pluginInfo = this.Info;
-            //R2API.ContentAddition.AddArtifactDef();
+            NumOfAspectsPerStageConf = Config.Bind<int>(
+                "General",
+                "NumOfArtifactsPerStage",
+                1,
+                "This is the amount of artifacts thet will be given to the chosen player each stage"
+            );
+            pluginInfo = this.Info;
+            FirstArtifactGivenConf = Config.Bind<string>(
+                "General",
+                "FirstArtifactGiven",
+                "Random",
+                "Specifies if you want to get a concrete artifact at the start. Available options: ZetAspectBlue, ZetAspectEarth, ZetAspectHaunted, ZetAspectLunar, ZetAspectPoison, ZetAspectRed, ZetAspectVoid, ZetAspectWhite. Anything else will make it random. Also integrations Aspects are supported too."
+            );
 
-            //On.EntityStates.Huntress.ArrowRain.OnEnter += (orig, self) =>
-            {
-                // [The code we want to run]
-
-                // This will be printed in the console.
-                //Log.LogInfo("You used Huntress's Arrow Rain!");
-
-                //Chat.AddMessage("You used Huntress's Arrow Rain!");
-
-                // Call the original function (orig)
-                // on the object it's normally called on (self)
-                //orig(self);
-            };
-
-            //AOCMod.ContentPackProvider.Initialize();
         }
 
 

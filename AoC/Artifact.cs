@@ -19,18 +19,31 @@ namespace AOCMod
         private static int aspectID = 0;
         private static SceneType lastSceneType = RoR2.SceneType.Invalid;
         private static List<string> aspectNames = new List<string> { "ZetAspectBlue", "ZetAspectEarth", "ZetAspectHaunted", "ZetAspectLunar", "ZetAspectPoison", "ZetAspectRed", "ZetAspectVoid", "ZetAspectWhite" };
+        private static string firstArtifactName = AOC.FirstArtifactGivenConf.Value;
+        private static int numOfAspects = AOC.NumOfAspectsPerStageConf.Value;
+        private static bool IsFirstStage = true;
 
         public static void InitializeArtifact()
         {
 
             AddIntegrations();
             Hooks();
+            if (numOfAspects <= 0)
+            {
+                numOfAspects = 1;
+            }
         }
         public static void Hooks()
         {
             RoR2.Stage.onStageStartGlobal += AOCProvideAspect;
+            RoR2.Run.onRunStartGlobal += RunStartInit;
             //RoR2.Stage.onServerStageComplete += AOCTakeAwayAspectFallback;
             TeleporterInteraction.onTeleporterChargedGlobal += AOCTakeAwayAspect;
+        }
+
+        private static void RunStartInit(Run obj)
+        {
+            IsFirstStage = true;
         }
 
         public static bool PluginLoaded(string key)
@@ -71,9 +84,11 @@ namespace AOCMod
             {
                 if (lastSceneType == SceneType.Intermission)
                 {
-                    CharacterMaster.readOnlyInstancesList[chosenID].inventory.RemoveItem(ItemCatalog.FindItemIndex(aspectNames[aspectID]));
+                    for (int i = 0; i < numOfAspects; i++)
+                    {
+                        CharacterMaster.readOnlyInstancesList[chosenID].inventory.RemoveItem(ItemCatalog.FindItemIndex(aspectNames[aspectID]));
+                    }
                 }
-
                 lastSceneType = obj.sceneDef.sceneType;
                 //Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { $"111 chosenID: {chosenID}, AspectID: {aspectID}, NAME: {GetZetAspectID(aspectID)}, MAX PlayerID: {PlayerCharacterMasterController.instances.Count - 1}" } });
                 chosenID = random.Next(PlayerCharacterMasterController.instances.Count);
@@ -81,7 +96,22 @@ namespace AOCMod
                 try
                 {
                     //Chat.AddMessage($"Current max aspect ID count is: {aspectNames.Count}");
-                    CharacterMaster.readOnlyInstancesList[chosenID].inventory.GiveItemString(aspectNames[aspectID]);
+                    if (IsFirstStage == true && aspectNames.Contains(firstArtifactName))
+                    {
+                        for (int i = 0; i < numOfAspects; i++)
+                        {
+                            CharacterMaster.readOnlyInstancesList[chosenID].inventory.GiveItemString(firstArtifactName);
+                        }
+                        aspectID = aspectNames.IndexOf(firstArtifactName);
+                        IsFirstStage = false;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < numOfAspects; i++)
+                        {
+                            CharacterMaster.readOnlyInstancesList[chosenID].inventory.GiveItemString(aspectNames[aspectID]);
+                        }
+                    }
                 }
                 catch { Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { $"Could not add the item to the inventory of the player ID { chosenID }, perhaps CharacterMaster.readOnlyInstancesList has not been created or the ID is wrong" } }); }
 
@@ -94,11 +124,17 @@ namespace AOCMod
 
         private static void AOCTakeAwayAspect(TeleporterInteraction obj)
         {
-            try
+            if (RunArtifactManager.instance.IsArtifactEnabled(MyArtifactDef))
             {
-                CharacterMaster.readOnlyInstancesList[chosenID].inventory.RemoveItem(ItemCatalog.FindItemIndex(aspectNames[aspectID]));
+                try
+                {
+                    for (int i = 0; i < numOfAspects; i++)
+                    {
+                        CharacterMaster.readOnlyInstancesList[chosenID].inventory.RemoveItem(ItemCatalog.FindItemIndex(aspectNames[aspectID]));
+                    }
+                }
+                catch { Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { $"Could not remove the item from the inventory of the player ID { chosenID }, perhaps CharacterMaster.readOnlyInstancesList has not been created or the ID is wrong" } }); }
             }
-            catch { Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { $"Could not remove the item from the inventory of the player ID { chosenID }, perhaps CharacterMaster.readOnlyInstancesList has not been created or the ID is wrong" } }); }
         }
     }
 }
