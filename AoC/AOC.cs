@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using BepInEx;
-using BepInEx.Logging;
-using RoR2.ContentManagement;
+﻿using BepInEx;
 using RoR2;
 using static AOCMod.AssetLoad;
-using static RoR2.Chat;
-using static RoR2.Console;
 using BepInEx.Configuration;
+using AoC;
+using BepInEx.Logging;
 
 namespace AOCMod
 {
@@ -16,11 +11,15 @@ namespace AOCMod
     //[BepInDependency(R2API.R2API.PluginGUID)]
 
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
+    [BepInDependency("com.TPDespair.ZetAspects")]
+    [BepInDependency("com.groovesalad.GrooveSaladSpikestripContent", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.plasmacore.PlasmaCoreSpikestripContent", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.Skell.GoldenCoastPlus", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.KomradeSpectre.Aetherium", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("bubbet.bubbetsitems", BepInDependency.DependencyFlags.SoftDependency)]
 
     public class AOC : BaseUnityPlugin
     {
-        public static ConfigEntry<int> NumOfAspectsPerStageConf { get; set; }
-        public static ConfigEntry<string> FirstArtifactGivenConf { get; set; }
         //We will be using 2 modules from R2API: ItemAPI to add our item and LanguageAPI to add our language tokens.
         //[R2APISubmoduleDependency(nameof(ItemAPI), nameof(LanguageAPI))]
 
@@ -31,30 +30,19 @@ namespace AOCMod
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "CuteDoge";
         public const string PluginName = "ArtifactOfChosen";
-        public const string PluginVersion = "1.0.7";
+        public const string PluginVersion = "1.1.0";
 
         private static ArtifactDef AoC;
+        public static ManualLogSource log;
         //AOC = ArtifactOfChosen
 
         public static PluginInfo pluginInfo;
 
         public void Awake()
         {
-            pluginInfo = this.Info;
-            NumOfAspectsPerStageConf = Config.Bind<int>(
-                "General",
-                "NumOfArtifactsPerStage",
-                1,
-                "This is the amount of artifacts thet will be given to the chosen player each stage"
-            );
-            pluginInfo = this.Info;
-            FirstArtifactGivenConf = Config.Bind<string>(
-                "General",
-                "FirstArtifactGiven",
-                "Random",
-                "Specifies if you want to get a concrete artifact at the start. Available options: ZetAspectBlue, ZetAspectEarth, ZetAspectHaunted, ZetAspectLunar, ZetAspectPoison, ZetAspectRed, ZetAspectVoid, ZetAspectWhite. Anything else will make it random. Also integrations Aspects are supported too."
-            );
-
+            log = Logger;
+            pluginInfo = Info;
+            AOCConfig.Init(Paths.ConfigPath);
         }
 
 
@@ -62,22 +50,8 @@ namespace AOCMod
         void Start()
         {
             PopulateAssets();
-            AOCMod.ContentPackProvider.Initialize();
+            ContentPackProvider.Initialize();
             Artifact.InitializeArtifact();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            //if (i > 200)
-            {
-                //Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] { "200 tick" } });
-                //i = 0;
-            }
-
-            //i++;
-            //Chat.SendBroadcastChat(new SimpleChatMessage { baseToken = "<color=#e5eefc>{0}</color>", paramTokens = new[] {  } });
-            //Chat.AddMessage($"{i}");
         }
 
     }
