@@ -114,7 +114,7 @@ namespace AOCMod
                     if (aspectNames.Contains(firstArtifactName)) aspectID = aspectNames.IndexOf(firstArtifactName);
                 }
 
-                if (dirty) AOCTakeAwayAspect(null);
+                if (dirty) AOCTakeAwayAspect(null, true);
                 lastSceneType = stage.sceneDef.sceneType;
 
                 // get chosen
@@ -147,9 +147,9 @@ namespace AOCMod
             catch { AOC.log.LogError($"Could not add the item to the inventory of the player ID { chosenID }, perhaps CharacterMaster.readOnlyInstancesList has not been created or the ID is wrong"); }
         }
 
-        private static void AOCTakeAwayAspect(TeleporterInteraction _)
+        private static void AOCTakeAwayAspect(TeleporterInteraction _, bool force = false)
         {
-            if (RunArtifactManager.instance.IsArtifactEnabled(MyArtifactDef) && !AOCConfig.postTeleporterAspect.Value)
+            if (RunArtifactManager.instance.IsArtifactEnabled(MyArtifactDef) && (force || !AOCConfig.postTeleporterAspect.Value))
             {
                 try
                 {
