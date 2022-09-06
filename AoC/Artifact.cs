@@ -1,4 +1,4 @@
-﻿using RoR2;
+using RoR2;
 using BepInEx.Bootstrap;
 //using MonoMod.RuntimeDetour;
 using System.Collections.Generic;
@@ -114,7 +114,7 @@ namespace AOCMod
                     if (aspectNames.Contains(firstArtifactName)) aspectID = aspectNames.IndexOf(firstArtifactName);
                 }
 
-                if (dirty) AOCTakeAwayAspect(null);
+                if (dirty) AOCTakeAwayAspectInternal();
                 lastSceneType = stage.sceneDef.sceneType;
 
                 // get chosen
@@ -149,17 +149,19 @@ namespace AOCMod
 
         private static void AOCTakeAwayAspect(TeleporterInteraction _)
         {
-            if (RunArtifactManager.instance.IsArtifactEnabled(MyArtifactDef) && !AOCConfig.postTeleporterAspect.Value)
+            if (RunArtifactManager.instance.IsArtifactEnabled(MyArtifactDef) && !AOCConfig.postTeleporterAspect.Value) AOCTakeAwayAspectInternal();
+        }
+
+        private static void AOCTakeAwayAspectInternal()
+        {
+            try
             {
-                try
-                {
-                    for (int i = 0; i < PlayerCharacterMasterController.instances.Count; i++) foreach (var aspect in aspectsGiven[i])
+                for (int i = 0; i < PlayerCharacterMasterController.instances.Count; i++) foreach (var aspect in aspectsGiven[i])
                         CharacterMaster.readOnlyInstancesList[i].inventory.RemoveItem(ItemCatalog.FindItemIndex(aspectNames[aspect]));
-                }
-                catch { AOC.log.LogError($"Could not remove the item from the inventory of the player ID { chosenID }, perhaps CharacterMaster.readOnlyInstancesList has not been created or the ID is wrong"); }
-                for (var i = 0; i < PlayerCharacterMasterController.instances.Count; i++) aspectsGiven[i].Clear();
-                dirty = false;
             }
+            catch { AOC.log.LogError($"Could not remove the item from the inventory of the player ID { chosenID }, perhaps CharacterMaster.readOnlyInstancesList has not been created or the ID is wrong"); }
+            for (var i = 0; i < PlayerCharacterMasterController.instances.Count; i++) aspectsGiven[i].Clear();
+            dirty = false;
         }
     }
 }
